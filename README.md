@@ -6,6 +6,8 @@
 
 ---
 
+![INDUS Dashboard](screenshots/dashboard.png)
+
 ## Architecture
 
 ```

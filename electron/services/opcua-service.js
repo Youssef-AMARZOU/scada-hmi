@@ -38,8 +38,8 @@ class OPCUAService extends EventEmitter {
         this._opcua = require('node-opcua');
 
         this._client = this._opcua.OPCUAClient.create({
-          applicationName: 'INDUS-Platform',
-          applicationUri: 'urn:INDUS-Platform',
+        applicationName: 'INDUS-Platform',
+        applicationUri: 'urn:DESKTOP-KP5LSO3:INDUS-Platform',
           connectionStrategy: {
             initialDelay: 1000,
             maxDelay: 5000,

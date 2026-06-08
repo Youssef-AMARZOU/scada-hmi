@@ -235,7 +235,6 @@ function createWindow() {
       nodeIntegration: false,
     },
     autoHideMenuBar: true,
-    show: false,
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -250,15 +249,9 @@ function createWindow() {
     mainWindow.focus();
   });
 
-  // Force show after 3s even if ready-to-show didn't fire (renderer crash guard)
-  setTimeout(() => {
-    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
-      mainWindow.show();
-      mainWindow.focus();
-    }
-  }, 3000);
-
   mainWindow.webContents.on('did-finish-load', async () => {
+    mainWindow.show();
+
     const thresholds = dataStore.get('alarm-thresholds');
     if (thresholds) alarmEngine.setThresholds(thresholds);
 
@@ -266,29 +259,39 @@ function createWindow() {
 
     const config = dataStore.get('service-config') || {};
 
+    // Simulation first (instantané)
     if (config.simulation?.enabled !== false) {
       simulation.start(config.simulation?.interval || 1000);
       simulationMode = true;
     }
 
-    if (config.opcua?.autoConnect === true) {
-      opcua.connect(config.opcua?.url || 'opc.tcp://localhost:4840');
-    }
-
-    if (config.factoryIO?.autoConnect === true) {
-      factoryIO.connect(config.factoryIO?.url || 'http://localhost:7410', config.factoryIO?.pollInterval || 300);
-    }
+    // Connexions échelonnées pour éviter de bloquer le renderer
+    const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
     if (config.mqtt?.autoConnect !== false) {
       mqttService.connect(config.mqtt?.url || 'mqtt://localhost:1883');
     }
 
-    if (config.influxDB?.autoConnect !== false && config.influxDB?.token) {
-      influxService.connect(config.influxDB);
+    await delay(300);
+
+    if (config.opcua?.autoConnect === true) {
+      opcua.connect(config.opcua?.url || 'opc.tcp://localhost:4840');
     }
+
+    await delay(300);
 
     if (config.modbus?.autoConnect !== false) {
       modbusService.connect(config.modbus || { host: '127.0.0.1', port: 502, unitId: 1 });
+    }
+
+    await delay(300);
+
+    if (config.factoryIO?.autoConnect === true) {
+      factoryIO.connect(config.factoryIO?.url || 'http://localhost:7410', config.factoryIO?.pollInterval || 300);
+    }
+
+    if (config.influxDB?.autoConnect !== false && config.influxDB?.token) {
+      influxService.connect(config.influxDB);
     }
   });
 

@@ -1,0 +1,19 @@
+.dash-kpis { margin-bottom: 20px; }
+.dash-section { margin-bottom: 20px; }
+.status-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.status-row { display: flex; align-items: center; gap: 8px; }
+.status-row span:nth-child(2) { flex: 1; font-size: 0.8rem; color: var(--text-1); }
+.tag-summary { display: flex; gap: 16px; padding-top: 10px; border-top: 1px solid var(--border); }
+.tag-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tag-stat .data-value { font-size: 1.1rem; color: var(--cyan); }
+.tag-stat span:last-child { font-size: 0.65rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
+.dash-modules { margin-top: 20px; }
+.module-card {
+  display: flex; align-items: center; gap: 14px; text-decoration: none; cursor: pointer; padding: 16px;
+}
+.module-card .module-icon {
+  width: 44px; height: 44px; border-radius: var(--r); display: flex; align-items: center;
+  justify-content: center; background: var(--bg-2); flex-shrink: 0;
+}
+.module-card h4 { font-size: 0.9rem; color: var(--text-0); margin-bottom: 2px; }
+.module-card p { font-size: 0.75rem; color: var(--text-2); }

@@ -1,0 +1,9 @@
+.gmao-kpis { margin-bottom: 20px; }
+.gmao-charts { margin-bottom: 20px; }
+.gmao-table-section { overflow: auto; }
+.asset-tree { display: flex; flex-direction: column; gap: 4px; }
+.asset-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--r); cursor: pointer; font-size: 0.85rem; }
+.asset-item:hover { background: var(--bg-2); }
+.asset-item.parent { font-weight: 600; }
+.asset-item.child { margin-left: 24px; font-weight: 400; color: var(--text-1); }
+.asset-name { flex: 1; }

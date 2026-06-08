@@ -1,0 +1,59 @@
+.sidebar {
+  grid-row: 1 / -1;
+  width: 220px;
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  z-index: 100;
+}
+
+.sidebar.collapsed { width: 56px; }
+
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-bottom: 1px solid var(--border); height: 48px;
+}
+
+.brand-icon {
+  width: 28px; height: 28px; border-radius: 3px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0;
+  font-family: var(--mono); font-weight: 700; font-size: 0.65rem;
+}
+
+.brand-text h1 {
+  font-size: 0.95rem; font-weight: 800; letter-spacing: 3px; color: var(--text-0);
+  font-family: var(--mono); line-height: 1;
+}
+
+.brand-text span {
+  font-size: 0.55rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 1.5px;
+  font-family: var(--mono);
+}
+
+.sidebar-nav { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--r);
+  color: var(--text-2); text-decoration: none; font-size: 0.8rem; font-weight: 500;
+  transition: background 0.1s, color 0.1s; cursor: pointer;
+}
+
+.nav-item:hover { background: var(--bg-2); color: var(--text-0); }
+.nav-item.active { background: var(--accent-dim); color: var(--accent); border-left: 2px solid var(--accent); }
+
+.sidebar.collapsed .nav-item { justify-content: center; padding: 9px 0; }
+.sidebar.collapsed .nav-item span { display: none; }
+
+.sidebar-footer { padding: 8px; border-top: 1px solid var(--border); }
+.conn-indicators { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.conn-row { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text-2); font-family: var(--mono); }
+.conn-label { margin-left: auto; font-size: 0.6rem; }
+
+.collapse-btn {
+  width: 100%; padding: 6px; background: none; border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.collapse-btn:hover { background: var(--bg-2); color: var(--text-0); }

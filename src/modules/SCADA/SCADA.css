@@ -1,0 +1,2 @@
+.scada-process { display: flex; flex-direction: column; gap: 16px; }
+.tag-table-card { overflow: auto; }

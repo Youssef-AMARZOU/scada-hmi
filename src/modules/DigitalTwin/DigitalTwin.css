@@ -1,0 +1,9 @@
+.digital-twin { display: flex; flex-direction: column; }
+.dt-layout { display: grid; grid-template-columns: 1fr 320px; gap: 16px; height: calc(100vh - 180px); }
+.dt-canvas-wrapper { background: var(--bg-0); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; position: relative; }
+.dt-sidebar { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+.equip-list { display: flex; flex-direction: column; gap: 6px; }
+.equip-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--r); background: var(--bg-2); font-size: 0.8rem; }
+.live-tags { display: flex; flex-direction: column; gap: 4px; }
+.live-tag-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.tag-name { color: var(--text-2); }

@@ -1,0 +1,39 @@
+.header {
+  grid-column: 2; grid-row: 1; height: 48px; background: var(--bg-1);
+  border-bottom: 1px solid var(--border); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 20px; z-index: 50;
+}
+
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.header-clock { display: flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 0.8rem; }
+.header-clock .data-value { color: var(--text-0); font-size: 0.85rem; font-family: var(--mono); font-weight: 600; }
+.header-date { color: var(--text-3); font-size: 0.75rem; font-family: var(--mono); }
+
+.header-tag-count {
+  display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--green);
+  padding: 3px 10px; background: var(--green-dim); border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 2px; font-family: var(--mono); font-weight: 600;
+}
+
+.header-btn {
+  display: flex; align-items: center; gap: 5px; padding: 6px 12px; background: none;
+  border: 1px solid var(--border); border-radius: var(--r); color: var(--text-2); cursor: pointer;
+  font-family: var(--sans); font-size: 0.8rem; transition: background 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.header-btn:hover { background: var(--bg-2); color: var(--text-0); border-color: var(--text-2); }
+
+.alarm-btn { position: relative; }
+
+.alarm-badge {
+  position: absolute; top: -5px; right: -5px; min-width: 16px; height: 16px;
+  border-radius: 2px; font-size: 0.6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; padding: 0 3px;
+  font-family: var(--mono);
+}
+
+.alarm-badge.critical { background: var(--red); color: #fff; }
+.alarm-badge.warning { background: var(--amber); color: #000; }

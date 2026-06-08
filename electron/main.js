@@ -217,6 +217,7 @@ function registerIPC() {
 }
 
 function createWindow() {
+  console.log('[INDUS] Creating main window...');
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 1000,
@@ -234,15 +235,32 @@ function createWindow() {
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
+    console.log('[INDUS] Loading dev server:', process.env.VITE_DEV_SERVER_URL);
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    const htmlPath = path.join(__dirname, '../dist/index.html');
+    console.log('[INDUS] Loading production build:', htmlPath);
+    mainWindow.loadFile(htmlPath);
   }
 
-  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.once('ready-to-show', () => {
+    console.log('[INDUS] Window ready-to-show');
+    mainWindow.show();
+    mainWindow.focus();
+  });
+
+  // Force show after 3s even if ready-to-show didn't fire (renderer crash guard)
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      console.log('[INDUS] Force showing window after timeout');
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  }, 3000);
 
   mainWindow.webContents.on('did-finish-load', async () => {
+    console.log('[INDUS] Renderer did-finish-load');
     const thresholds = dataStore.get('alarm-thresholds');
     if (thresholds) alarmEngine.setThresholds(thresholds);
 
@@ -276,6 +294,15 @@ function createWindow() {
     }
   });
 
+  mainWindow.webContents.on('crashed', (event, killed) => {
+    console.error('[INDUS] Renderer crashed!', killed);
+  });
+
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('[INDUS] Failed to load:', errorCode, errorDescription);
+  });
+
+  console.log('[INDUS] Main window created');
   return mainWindow;
 }
 

@@ -8,6 +8,9 @@
 
 ![INDUS Dashboard](screenshots/dashboard.png)
 
+[![REGARDER LA DÉMO](screenshots/dashboard.png)](screenshots/demo.mp4)
+*Cliquez sur l'image pour voir la démo vidéo*
+
 ## Architecture
 
 ```

@@ -1,6 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.indus.platform');
+}
+
 process.on('uncaughtException', (err) => {
   console.error('[INDUS] Uncaught exception:', err.message);
 });
@@ -224,6 +228,7 @@ function createWindow() {
     minHeight: 800,
     title: 'INDUS — Plateforme Industrielle Intégrée',
     backgroundColor: '#0a0e1a',
+    icon: path.join(__dirname, '../screenshots/app-icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

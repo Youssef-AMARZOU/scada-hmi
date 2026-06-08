@@ -1,15 +1,52 @@
 {
-  "name": "indus",
-  "private": true,
+  "name": "@youssef-amarzou/indus",
   "version": "1.0.0",
   "description": "INDUS — Plateforme Industrielle Intégrée",
   "main": "electron/main.js",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "electron": "electron .",
-    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\""
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "release": "npm run build && electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.indus.platform",
+    "productName": "INDUS",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "screenshots/app-icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "screenshots/app-icon.ico",
+      "license": "MIT"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Youssef-AMARZOU",
+      "repo": "scada-hmi"
+    }
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

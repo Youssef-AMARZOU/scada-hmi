@@ -1,0 +1,55 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  NODE_VERSION: "20"
+  CI_REGISTRY: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - dist/
+
+build:
+  stage: build
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+test:
+  stage: test
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npx playwright install chromium --with-deps
+    - npx playwright test
+  artifacts:
+    when: always
+    paths:
+      - test-results/
+    reports:
+      junit: test-results/junit.xml
+
+pages:
+  stage: deploy
+  image: node:${NODE_VERSION}
+  script:
+    - npm ci
+    - npm run build
+    - mv dist/ public/
+  artifacts:
+    paths:
+      - public/
+  only:
+    - master
+  environment:
+    name: production
+    url: https://youssef-amarzou.gitlab.io/scada-hmi

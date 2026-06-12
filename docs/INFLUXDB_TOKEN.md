@@ -14,7 +14,7 @@ INDUS crée automatiquement :
 
 ### Via l'interface web
 1. Ouvre : http://localhost:8086
-2. Connecte-toi (utilisateur : `admin`, mot de passe : `indusadmin2026!`)
+2. Connecte-toi (utilisateur : `admin`, mot de passe : `votre-mot-de-passe-ici`)
 3. Menu latéral → **Load Data** → **API Tokens**
 4. Clique sur le token → **Copy to clipboard**
 5. Dans INDUS → Settings → InfluxDB → colle le token → **Connecter**
@@ -36,7 +36,7 @@ Cherche `"token": "..."` sous `service-config.influxDB`.
 
 ## 3. Token actuel (si auto-setup déjà fait)
 
-**Token** : `Nj8jft2OqEdpiUiotFaesTrVObKOeM-jSYFafAuV_QgxM5VMihIdt7IzJUuV0a-osdgzje5-Q7UBQt8T1W7IxQ==`
+**Token** : `votre-token-influxdb-ici`
 
 Ce token est déjà sauvegardé dans INDUS. Il permet l'accès complet à :
 - URL : http://localhost:8086

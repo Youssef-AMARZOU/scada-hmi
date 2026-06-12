@@ -2,7 +2,12 @@
 
 **SCADA / HMI / MES / GMAO** — Application desktop temps réel connectée à des protocoles industriels (OPC-UA, Modbus TCP, MQTT) avec stockage de séries temporelles (InfluxDB), simulation de capteurs, maintenance prédictive et jumeau numérique 3D.
 
-![Tech Stack](https://img.shields.io/badge/Electron-32.0-47848F?logo=electron) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react) ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite) ![Three.js](https://img.shields.io/badge/Three.js-0.184-000000?logo=three.js) ![License](https://img.shields.io/badge/License-MIT-green)
+![Tech Stack](https://img.shields.io/badge/Electron-42-47848F?logo=electron) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react) ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite) ![Three.js](https://img.shields.io/badge/Three.js-0.184-000000?logo=three.js) ![License](https://img.shields.io/badge/License-MIT-green)
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/Youssef-AMARZOU/scada-hmi)
+[![GitLab](https://img.shields.io/badge/GitLab-FC6D26?logo=gitlab)](https://gitlab.com/Youssef-AMARZOU/scada-hmi)
+[![Hugging Face](https://img.shields.io/badge/HuggingFace-FFD21E?logo=huggingface&logoColor=000)](https://huggingface.co/spaces/YsfMO98/indus-scada-hmi)
+[![Kaggle](https://img.shields.io/badge/Kaggle-20BEFF?logo=kaggle)](https://kaggle.com/youssefamarzou/indus-scada-hmi)
 
 ---
 

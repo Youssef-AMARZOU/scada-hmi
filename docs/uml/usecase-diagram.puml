@@ -1,0 +1,111 @@
+@startuml usecase-diagram
+title Diagramme de Cas d'Utilisation - INDUS SCADA/HMI
+left to right direction
+skinparam actorStyle awesome
+skinparam usecaseFontSize 12
+skinparam packageFontSize 14
+
+actor "Operateur\nIndustriel" as Op
+actor "Maintenance\nTechnician" as MT
+actor "Ingenieur\nProcess" as IP
+actor "Administrateur\nSysteme" as Admin
+actor "MATLAB\nBackend" as ML
+
+rectangle "INDUS SCADA/HMI Platform" {
+
+    package "Monitoring & Controle" {
+        usecase "Visualiser Dashboard OEE" as UC1
+        usecase "Controler Machines (Start/Stop)" as UC2
+        usecase "Injecter Anomalie" as UC3
+        usecase "Surveiller Temperatures" as UC4
+        usecase "Surveiller Vibrations" as UC5
+        usecase "Surveiller Pressions" as UC6
+    }
+
+    package "SCADA / P&ID" {
+        usecase "Visualiser P&ID" as UC7
+        usecase "Controler Pompes" as UC8
+        usecase "Controler Valves" as UC9
+        usecase "Controler Broyeurs" as UC10
+    }
+
+    package "Predictive Maintenance" {
+        usecase "Visualiser Predictions" as UC11
+        usecase "Calculer RUL" as UC12
+        usecase "Analyser FFT" as UC13
+        usecase "Detecter Anomalies" as UC14
+    }
+
+    package "GMAO" {
+        usecase "Gerer Ordres de Travail" as UC15
+        usecase "Planifier Maintenance" as UC16
+        usecase "Historiser Interventions" as UC17
+    }
+
+    package "MES" {
+        usecase "Suivre Production" as UC18
+        usecase "Calculer OEE" as UC19
+        usecase "Analyser Performance" as UC20
+    }
+
+    package "Digital Twin" {
+        usecase "Visualiser Jumeau 3D" as UC21
+        usecase "Simuler Scenarios" as UC22
+    }
+
+    package "Connectivite" {
+        usecase "Connecter MQTT" as UC23
+        usecase "Lire InfluxDB" as UC24
+        usecase "Publier OPC-UA" as UC25
+        usecase "Lire Modbus" as UC26
+    }
+
+    package "Configuration" {
+        usecase "Configurer Vitesse" as UC27
+        usecase "Exporter Rapport PNG" as UC28
+        usecase "Reinitialiser Simulation" as UC29
+    }
+}
+
+' Operateur
+Op --> UC1
+Op --> UC2
+Op --> UC3
+Op --> UC4
+Op --> UC5
+Op --> UC6
+Op --> UC7
+Op --> UC8
+Op --> UC9
+Op --> UC10
+
+' Maintenance
+MT --> UC11
+MT --> UC12
+MT --> UC13
+MT --> UC14
+MT --> UC15
+MT --> UC16
+MT --> UC17
+
+' Ingenieur Process
+IP --> UC18
+IP --> UC19
+IP --> UC20
+IP --> UC21
+IP --> UC22
+
+' Admin
+Admin --> UC23
+Admin --> UC24
+Admin --> UC25
+Admin --> UC26
+Admin --> UC27
+Admin --> UC28
+Admin --> UC29
+
+' MATLAB
+ML --> UC11 : publie
+ML --> UC12 : calcule
+ML --> UC19 : OEE
+@enduml

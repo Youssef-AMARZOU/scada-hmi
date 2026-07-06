@@ -1,0 +1,109 @@
+@startuml state-diagram
+title Diagramme d'Etats - Cycle de Vie des Machines INDUS
+skinparam stateFontSize 14
+skinparam stateArrowThickness 2
+
+state "Demarrage" as Start {
+    [*] --> Initialisation
+    state Initialisation {
+        [*] --> ConfigSensors
+        ConfigSensors --> ConnectProtocols : config OK
+        ConnectProtocols --> LoadModel : connecte
+        LoadModel --> [*] : pret
+    }
+    Initialisation --> Idle : pret
+}
+
+state "Fonctionnement Normal" as Normal {
+    [*] --> Running
+    state Running {
+        [*] --> Monitoring
+        Monitoring --> DataCapture : tick()
+        DataCapture --> UpdateInfluxDB : ecrit
+        UpdateInfluxDB --> PublishMQTT : publie
+        PublishMQTT --> RefreshUI : met a jour
+        RefreshUI --> Monitoring : boucle
+    }
+    Running --> Idle : pause
+}
+
+state "Surveillance" as Watch {
+    [*] --> WatchState
+    state WatchState {
+        [*] --> CheckThresholds
+        CheckThresholds --> AlertIfExceeded : seuil depasse
+        AlertIfExceeded --> LogWarning : alarme
+        LogWarning --> [*]
+    }
+}
+
+state "Anomalie Detectee" as Anomaly {
+    [*] --> AnomalyDetected
+    state AnomalyDetected {
+        [*] --> InjectAnomaly
+        InjectAnomaly --> SpikeValues : simule
+        SpikeValues --> PublishAlert : MQTT
+        PublishAlert --> LogAnomaly : journal
+        LogAnomaly --> [*]
+    }
+}
+
+state "Arret" as Stop {
+    [*] --> Stopping
+    state Stopping {
+        [*] --> StopSimulation
+        StopSimulation --> DisconnectProtocols : stop
+        DisconnectProtocols --> SaveHistory : sauvegarde
+        SaveHistory --> [*]
+    }
+}
+
+state "Maintenance" as Maint {
+    [*] --> MaintenanceMode
+    state MaintenanceMode {
+        [*] --> BlockOperations
+        BlockOperations --> AllowManualControl : manuel
+        AllowManualControl --> RestoreAuto : fin
+        RestoreAuto --> [*]
+    }
+}
+
+' Transitions principales
+[*] --> Start
+Start --> Normal : demarre
+Start --> Stop : echec init
+
+Normal --> Watch : seuil > 0.4
+Normal --> Anomaly : anomalie injectee
+Normal --> Stop : fermeture
+Normal --> Maint : mode maintenance
+
+Watch --> Normal : seuil < 0.4
+Watch --> Anomaly : seuil > 0.7
+Watch --> Stop : fermeture
+
+Anomaly --> Normal : anomalie corrigee
+Anomaly --> Stop : arret urgence
+Anomaly --> Maint : intervention
+
+Maint --> Normal : fin maintenance
+Maint --> Stop : arret
+
+Stop --> [*]
+
+note right of Anomaly
+    L'anomalie est injectee
+    manuellement via le bouton
+    "Injecter Anomalie" dans
+    le header de l'application.
+    Les valeurs de vibration
+    et temperature sont spikees.
+end note
+
+note bottom of Normal
+    Boucle principale:
+    simData(i,1) += deg*0.05 + noise
+    simData(i,2) += deg*0.3 + noise
+    simData(i,3) += deg*0.2 + noise
+end note
+@enduml

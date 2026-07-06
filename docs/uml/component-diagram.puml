@@ -1,0 +1,115 @@
+@startuml component-diagram
+title Diagramme de Composants - INDUS SCADA/HMI
+skinparam component {
+    BackgroundColor<<electron>> #FFB347
+    BackgroundColor<<frontend>> #87CEEB
+    BackgroundColor<<backend>> #90EE90
+    BackgroundColor<<external>> #DDA0DD
+    BackgroundColor<<matlab>> #FF6B6B
+}
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #666666
+
+package "Application Electron" <<electron>> {
+    [Electron Main Process] as EM
+    [Window Manager] as WM
+    [Tray Icon] as TR
+    [Auto Updater] as AU
+}
+
+package "Frontend Web" <<frontend>> {
+    [Dashboard] as Dash
+    [SCADA / P&ID] as SCADA
+    [Monitoring Temps Reel] as Mon
+    [Predictions & RUL] as Pred
+    [Analyse FFT] as FFT
+    [GMAO] as GMAO
+    [MES] as MES
+    [Digital Twin] as DT
+    [Configuration] as Config
+}
+
+package "Services Backend" <<backend>> {
+    [Simulation Engine\n(toutes les 1s)] as Sim
+    [Vite Dev Server\n(port 5173)] as Vite
+    [Health Check Script] as HC
+    [Playwright Tests] as Test
+}
+
+package "Protocoles Industriels" <<backend>> {
+    [OPC-UA Service\n(port 4840)] as OPC
+    [Modbus TCP Service\n(port 502)] as MOD
+    [MQTT Publisher\n(port 1883)] as MQTT
+    [InfluxDB Writer\n(port 8086)] as INF
+}
+
+package "MATLAB Backend" <<matlab>> {
+    [MATLAB HMI\n(5 onglets)] as MHMI
+    [Predictive Model\n(RandomForest)] as PM
+    [MQTT Bridge\n(Node.js)] as MB
+}
+
+package "Systemes Externes" <<external>> {
+    database "InfluxDB" as IDB
+    queue "Mosquitto Broker" as MOS
+    node "OPC-UA Server" as OPA
+    node "Modbus Devices" as MDB
+    node "InfluxDB UI" as IUI
+}
+
+' Connexions Frontend
+EM --> WM
+EM --> Vite : Demarre
+WM --> Dash
+WM --> SCADA
+WM --> Mon
+WM --> Pred
+WM --> FFT
+WM --> GMAO
+WM --> MES
+WM --> DT
+WM --> Config
+
+' Connexions Backend
+EM --> Sim : lance
+EM --> HC : surveille
+Sim --> OPC : met a jour
+Sim --> MOD : met a jour
+Sim --> MQTT : publie
+Sim --> INF : ecrit
+Vite --> Dash : nourrit
+
+' Connexions Externes
+OPC --> OPA : TCP 4840
+MOD --> MDB : TCP 502
+MQTT --> MOS : TCP 1883
+INF --> IDB : HTTP 8086
+
+' MATLAB
+MHMI --> PM
+PM --> MB : JSON
+MB --> MQTT : publie
+MHMI --> INF : ecrit
+
+' Monitoring
+HC --> INF : verifie
+HC --> MQTT : verifie
+HC --> OPC : verifie
+HC --> MOD : verifie
+
+note right of Sim
+  Boucle principale:
+  1. Met a jour simData
+  2. Calcul P(fail), RUL
+  3. Ecrit InfluxDB
+  4. Publie MQTT
+  5. Met a jour UI
+end note
+
+note bottom of MHMI
+  Source de donnees:
+  - Simulation interne
+  - Pas de BDD externe
+  - MQTT pour sorties
+end note
+@enduml

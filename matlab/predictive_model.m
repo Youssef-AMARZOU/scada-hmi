@@ -1,83 +1,74 @@
 %% INDUS — MATLAB Predictive Maintenance Publisher
-% This script runs predictive analytics and publishes results via MQTT
-% to the INDUS Electron platform.
+% Publie les predictions via le Node.js MQTT bridge.
+% Utilisation:  >> predictive_model
 %
-% Prerequisites: 
-%   - MATLAB R2024a+ (built-in mqtt function)
-%   - Mosquitto MQTT broker running on localhost:1883
-%
-% Usage: Run this script to send predictions to the dashboard.
+%% Configuration
+fprintf('=== INDUS - Predictive Publisher ===\n');
 
-%% Connect to MQTT Broker
-fprintf('Connecting to MQTT broker...\n');
-mqClient = mqttclient("tcp://localhost", Port=1883);
-fprintf('Connected successfully.\n');
-
-%% Simulated Machine Data (replace with real sensor data)
 machines = {'Machine M1', 'Machine M2', 'Broyeur BR2', 'Compresseur C2', 'Pompe P3'};
+features = [0.8, 72, 45, 1200; 2.1, 85, 52, 3400; 4.5, 98, 68, 5600; 0.5, 65, 40, 800; 1.2, 70, 48, 2100];
+weights = [0.3, 0.25, 0.2, 0.25];
+maxVals = [5, 100, 80, 6000];
 
-% Feature vectors: [vibration, temperature, pressure, runtime_hours]
-features = [
-    0.8, 72, 45, 1200;   % M1 - healthy
-    2.1, 85, 52, 3400;   % M2 - degrading 
-    4.5, 98, 68, 5600;   % BR2 - near failure
-    0.5, 65, 40, 800;    % C2 - healthy
-    1.2, 70, 48, 2100;   % P3 - healthy
-];
+% Detect node executable
+[~, nodeCheck] = system('where node 2>nul');
+if isempty(strtrim(nodeCheck))
+    nodeCmd = '"C:\Program Files\nodejs\node.exe"';
+else
+    nodeCmd = 'node';
+end
 
-%% Simple Predictive Model (Logistic Regression)
-% Normalized failure probability based on feature weights
-weights = [0.3, 0.25, 0.2, 0.25]; % vibration, temp, pressure, runtime
-maxVals = [5, 100, 80, 6000];     % normalization factors
+bridgeFile = fullfile(fileparts(mfilename('fullpath')), 'mqtt_bridge.js');
 
+if ~exist(bridgeFile, 'file')
+    error('Bridge introuvable: %s', bridgeFile);
+end
+
+%% Predictions
 for i = 1:length(machines)
-    % Normalize features
-    normFeatures = features(i,:) ./ maxVals;
-    
-    % Calculate failure probability (sigmoid)
-    score = sum(normFeatures .* weights);
+    normFeat = features(i,:) ./ maxVals;
+    score = sum(normFeat .* weights);
     failureProb = 1 / (1 + exp(-10*(score - 0.5)));
-    
-    % Estimate remaining useful life (RUL)
-    rul_hours = max(0, round((1 - failureProb) * 1000));
-    
-    % Confidence based on data quality
+    rul = max(0, round((1 - failureProb) * 1000));
     confidence = 0.85 + rand() * 0.1;
-    
-    % Build prediction struct
+
     prediction = struct(...
         'machine', machines{i}, ...
         'failure_probability', round(failureProb, 3), ...
-        'estimated_rul_hours', rul_hours, ...
+        'estimated_rul_hours', rul, ...
         'confidence', round(confidence, 3), ...
-        'features', struct(...
-            'vibration', features(i,1), ...
-            'temperature', features(i,2), ...
-            'pressure', features(i,3), ...
-            'runtime_hours', features(i,4) ...
-        ), ...
-        'timestamp', char(datetime('now', 'Format', 'yyyy-MM-dd''T''HH:mm:ss')) ...
-    );
-    
-    % Publish to MQTT
+        'status', ternary(failureProb>0.7,'CRITIQUE',ternary(failureProb>0.4,'Surveillance','Healthy')), ...
+        'features', struct('vibration', features(i,1), 'temperature', features(i,2), ...
+            'pressure', features(i,3), 'runtime_hours', features(i,4)), ...
+        'timestamp', char(datetime('now', 'Format', 'yyyy-MM-dd''T''HH:mm:ss')));
+
     topic = sprintf('factory/predictions/maintenance/%s', strrep(machines{i}, ' ', '_'));
-    write(mqClient, topic, jsonencode(prediction));
-    fprintf('Published prediction for %s: P(fail)=%.1f%%, RUL=%dh\n', ...
-        machines{i}, failureProb*100, rul_hours);
+    msg = jsonencode(prediction);
+    publishViaBridge(nodeCmd, bridgeFile, topic, msg);
+    fprintf('Publie %s: P(fail)=%.1f%%, RUL=%dh\n', machines{i}, failureProb*100, rul);
 end
 
-%% OEE Analysis
-oee_data = struct(...
+%% OEE
+oee = struct(...
     'availability', 87.5 + randn()*2, ...
     'performance', 92.3 + randn()*1.5, ...
     'quality', 97.8 + randn()*0.5, ...
-    'timestamp', char(datetime('now', 'Format', 'yyyy-MM-dd''T''HH:mm:ss')) ...
-);
-oee_data.overall = oee_data.availability * oee_data.performance * oee_data.quality / 10000;
+    'timestamp', char(datetime('now', 'Format', 'yyyy-MM-dd''T''HH:mm:ss')));
+oee.overall = oee.availability * oee.performance * oee.quality / 10000;
+publishViaBridge(nodeCmd, bridgeFile, 'factory/predictions/oee', jsonencode(oee));
+fprintf('OEE: %.1f%%\n', oee.overall);
+fprintf('=== Termine ===\n');
 
-write(mqClient, 'factory/analytics/oee', jsonencode(oee_data));
-fprintf('\nOEE Published: %.1f%% (A=%.1f%%, P=%.1f%%, Q=%.1f%%)\n', ...
-    oee_data.overall, oee_data.availability, oee_data.performance, oee_data.quality);
+%% Helper
+function publishViaBridge(nodeCmd, script, topic, msg)
+    tmpFile = [tempname, '_indus.json'];
+    fid = fopen(tmpFile, 'w', 'n', 'UTF-8');
+    fprintf(fid, '%s', msg);
+    fclose(fid);
+    system(sprintf('%s "%s" localhost:1883 "%s" --file "%s"', nodeCmd, script, topic, tmpFile));
+    delete(tmpFile);
+end
 
-fprintf('\nAll predictions published successfully!\n');
-fprintf('The INDUS dashboard will display these in the Analytics module.\n');
+function r = ternary(c, t, f)
+    if c, r = t; else, r = f; end
+end

@@ -1,0 +1,227 @@
+@startuml class-diagram
+title Diagramme de Classes - INDUS SCADA/HMI
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam packageFontSize 14
+
+package "Electron Main Process" {
+    class ElectronApp {
+        - mainWindow : BrowserWindow
+        - tray : Tray
+        - servers : ServerManager
+        + createWindow() : void
+        + showTray() : void
+        + quit() : void
+    }
+
+    class ServerManager {
+        - vite : ViteDevServer
+        - opcuaServer : OpcUaServer
+        - modbusServer : ModbusServer
+        - mqttClient : MqttClient
+        - influxWriter : InfluxWriter
+        + startAll() : Promise<void>
+        + stopAll() : void
+        + getStatus() : ServiceStatus[]
+    }
+}
+
+package "Frontend (Renderer)" {
+    class HMIApp {
+        - currentPage : string
+        - machines : Machine[]
+        - mqttConnected : boolean
+        + navigate(page) : void
+        + updateDashboard() : void
+        + initMQTT() : void
+    }
+
+    class DashboardPage {
+        - oee : OEEMetrics
+        - machineStatus : Status[]
+        + renderOEE() : void
+        + renderMachines() : void
+        + renderCharts() : void
+    }
+
+    class SCADAPage {
+        - tanks : Tank[]
+        - pumps : Pump[]
+        - valves : Valve[]
+        + renderPandID() : void
+        + updateLive() : void
+    }
+
+    class MonitoringPage {
+        - gauges : Gauge[]
+        - trendCharts : Chart[]
+        + renderGauges() : void
+        + renderTrends() : void
+    }
+
+    class PredictionsPage {
+        - predictions : Prediction[]
+        - rulData : RULData[]
+        + renderPredictions() : void
+        + renderRUL() : void
+    }
+
+    class AnalyticsPage {
+        - fftData : FFTResult[]
+        - statistics : Stats
+        + renderFFT() : void
+        + renderStatistics() : void
+    }
+
+    class GMAOPage {
+        - workOrders : WorkOrder[]
+        - maintenancePlan : MaintenancePlan[]
+        + renderWorkOrders() : void
+        + renderPlanning() : void
+    }
+
+    class MESPage {
+        - productionData : ProductionData
+        - oeeHistory : OEERecord[]
+        + renderProduction() : void
+        + renderOEEHistory() : void
+    }
+
+    class DigitalTwinPage {
+        - twinModel : TwinModel
+        - sensorData : SensorData[]
+        + render3DView() : void
+        + updateTwin() : void
+    }
+}
+
+package "Backend Services" {
+    class SimulationEngine {
+        - machines : MachineState[]
+        - tickRate : number
+        - running : boolean
+        + start() : void
+        + stop() : void
+        + tick() : MachineState[]
+        + injectAnomaly(machineId) : void
+    }
+
+    class InfluxDBService {
+        - url : string
+        - token : string
+        - org : string
+        + writePoint(measurement, tags, fields) : void
+        + query(flux) : Promise<Table>
+        + healthCheck() : boolean
+    }
+
+    class MQTTService {
+        - client : MqttClient
+        - broker : string
+        - port : number
+        + connect() : void
+        + publish(topic, message) : void
+        + subscribe(topic, callback) : void
+        + disconnect() : void
+    }
+
+    class OpcUaService {
+        - server : OPCUAServer
+        - port : number
+        + start() : void
+        + addNode(nodeId, value) : void
+        + readNode(nodeId) : any
+        + stop() : void
+    }
+
+    class ModbusService {
+        - server : ModbusTCPServer
+        - port : number
+        + start() : void
+        + readRegister(addr) : number
+        + writeRegister(addr, value) : void
+        + stop() : void
+    }
+}
+
+package "MATLAB Backend" {
+    class MATLABHMI {
+        - machines : string[]
+        - simData : double[][]
+        - history : SimHistory
+        - mqttConnected : boolean
+        + run() : void
+        + updateSimulation() : void
+        + publishMQTT() : void
+        + refreshUI() : void
+    }
+
+    class PredictiveModel {
+        - weights : double[]
+        - featureMax : double[]
+        + predict(features) : Prediction
+        + calculateRUL(failureProb) : number
+        + trainModel(data) : void
+    }
+}
+
+package "External Protocols" {
+    class InfluxDB {
+        <<external>>
+        + write()
+        + query()
+    }
+
+    class Mosquitto {
+        <<external>>
+        + broker
+        + clients
+    }
+
+    class OpcUaServer {
+        <<external>>
+        + nodes
+        + subscriptions
+    }
+
+    class ModbusDevice {
+        <<external>>
+        + coils
+        + registers
+    }
+}
+
+' Relationships
+HMIApp --> DashboardPage
+HMIApp --> SCADAPage
+HMIApp --> MonitoringPage
+HMIApp --> PredictionsPage
+HMIApp --> AnalyticsPage
+HMIApp --> GMAOPage
+HMIApp --> MESPage
+HMIApp --> DigitalTwinPage
+
+ElectronApp --> ServerManager
+ServerManager --> SimulationEngine
+ServerManager --> InfluxDBService
+ServerManager --> MQTTService
+ServerManager --> OpcUaService
+ServerManager --> ModbusService
+
+SimulationEngine ..> InfluxDBService : writes data
+SimulationEngine ..> MQTTService : publishes
+SimulationEngine ..> OpcUaService : updates nodes
+SimulationEngine ..> ModbusService : updates registers
+
+InfluxDBService --> InfluxDB : HTTP API
+MQTTService --> Mosquitto : TCP 1883
+OpcUaService --> OpcUaServer : TCP 4840
+ModbusService --> ModbusDevice : TCP 502
+
+MATLABHMI --> PredictiveModel
+MATLABHMI ..> MQTTService : publishes predictions
+MATLABHMI ..> InfluxDBService : queries history
+
+HMIApp ..> MQTTService : subscribes
+HMIApp ..> InfluxDBService : queries
+@enduml

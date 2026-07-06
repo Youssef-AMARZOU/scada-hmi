@@ -1,0 +1,732 @@
+{
+  "_type": "Project",
+  "_id": "indus-scada-hmi-001",
+  "name": "INDUS SCADA/HMI Platform",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "model-class",
+      "name": "Modele de Classes",
+      "ownedElements": [
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-electron",
+          "name": "Electron Main Process",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-electron-app",
+              "name": "ElectronApp",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-mainWindow",
+                  "name": "mainWindow",
+                  "type": "BrowserWindow"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-tray",
+                  "name": "tray",
+                  "type": "Tray"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-servers",
+                  "name": "servers",
+                  "type": "ServerManager"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-createWindow",
+                  "name": "createWindow",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-showTray",
+                  "name": "showTray",
+                  "type": "void"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-server-mgr",
+              "name": "ServerManager",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-vite",
+                  "name": "vite",
+                  "type": "ViteDevServer"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-opcua",
+                  "name": "opcuaServer",
+                  "type": "OpcUaServer"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-modbus",
+                  "name": "modbusServer",
+                  "type": "ModbusServer"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-mqtt",
+                  "name": "mqttClient",
+                  "type": "MqttClient"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-influx",
+                  "name": "influxWriter",
+                  "type": "InfluxWriter"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-startAll",
+                  "name": "startAll",
+                  "type": "Promise<void>"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-stopAll",
+                  "name": "stopAll",
+                  "type": "void"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-frontend",
+          "name": "Frontend (Renderer)",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-hmi-app",
+              "name": "HMIApp",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-currentPage",
+                  "name": "currentPage",
+                  "type": "string"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-machines",
+                  "name": "machines",
+                  "type": "Machine[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-mqttConnected",
+                  "name": "mqttConnected",
+                  "type": "boolean"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-navigate",
+                  "name": "navigate",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-updateDashboard",
+                  "name": "updateDashboard",
+                  "type": "void"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-dashboard",
+              "name": "DashboardPage",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-oee",
+                  "name": "oee",
+                  "type": "OEEMetrics"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-machineStatus",
+                  "name": "machineStatus",
+                  "type": "Status[]"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-scada",
+              "name": "SCADAPage",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-tanks",
+                  "name": "tanks",
+                  "type": "Tank[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-pumps",
+                  "name": "pumps",
+                  "type": "Pump[]"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-monitoring",
+              "name": "MonitoringPage",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-gauges",
+                  "name": "gauges",
+                  "type": "Gauge[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-trendCharts",
+                  "name": "trendCharts",
+                  "type": "Chart[]"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-predictions",
+              "name": "PredictionsPage",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-predictions",
+                  "name": "predictions",
+                  "type": "Prediction[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-rulData",
+                  "name": "rulData",
+                  "type": "RULData[]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-backend",
+          "name": "Backend Services",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-simulation",
+              "name": "SimulationEngine",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-machines",
+                  "name": "machines",
+                  "type": "MachineState[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-tickRate",
+                  "name": "tickRate",
+                  "type": "number"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-start",
+                  "name": "start",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-stop",
+                  "name": "stop",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-tick",
+                  "name": "tick",
+                  "type": "MachineState[]"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-influx",
+              "name": "InfluxDBService",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-url",
+                  "name": "url",
+                  "type": "string"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-token",
+                  "name": "token",
+                  "type": "string"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-writePoint",
+                  "name": "writePoint",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-query",
+                  "name": "query",
+                  "type": "Promise<Table>"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-mqtt-svc",
+              "name": "MQTTService",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-client",
+                  "name": "client",
+                  "type": "MqttClient"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-broker",
+                  "name": "broker",
+                  "type": "string"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-port",
+                  "name": "port",
+                  "type": "number"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-connect",
+                  "name": "connect",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-publish",
+                  "name": "publish",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-subscribe",
+                  "name": "subscribe",
+                  "type": "void"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-opcua",
+              "name": "OpcUaService",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-server",
+                  "name": "server",
+                  "type": "OPCUAServer"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-port",
+                  "name": "port",
+                  "type": "number"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-start",
+                  "name": "start",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-addNode",
+                  "name": "addNode",
+                  "type": "void"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-modbus",
+              "name": "ModbusService",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-server",
+                  "name": "server",
+                  "type": "ModbusTCPServer"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-port",
+                  "name": "port",
+                  "type": "number"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-start",
+                  "name": "start",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-readRegister",
+                  "name": "readRegister",
+                  "type": "number"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-matlab",
+          "name": "MATLAB Backend",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-matlab-hmi",
+              "name": "MATLABHMI",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-machines",
+                  "name": "machines",
+                  "type": "string[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-simData",
+                  "name": "simData",
+                  "type": "double[][]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-history",
+                  "name": "history",
+                  "type": "SimHistory"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-mqttConnected",
+                  "name": "mqttConnected",
+                  "type": "boolean"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-run",
+                  "name": "run",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-updateSimulation",
+                  "name": "updateSimulation",
+                  "type": "void"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-publishMQTT",
+                  "name": "publishMQTT",
+                  "type": "void"
+                }
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-predictive",
+              "name": "PredictiveModel",
+              "ownedElements": [
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-weights",
+                  "name": "weights",
+                  "type": "double[]"
+                },
+                {
+                  "_type": "UMLAttribute",
+                  "_id": "attr-featureMax",
+                  "name": "featureMax",
+                  "type": "double[]"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-predict",
+                  "name": "predict",
+                  "type": "Prediction"
+                },
+                {
+                  "_type": "UMLOperation",
+                  "_id": "op-calculateRUL",
+                  "name": "calculateRUL",
+                  "type": "number"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "UMLModel",
+      "_id": "model-sequence",
+      "name": "Modele de Sequence",
+      "ownedElements": [
+        {
+          "_type": "UMLInteraction",
+          "_id": "int-startup",
+          "name": "Demarrage Application",
+          "ownedElements": [
+            {
+              "_type": "UMLLifeline",
+              "_id": "ll-user",
+              "name": "Utilisateur"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "ll-electron",
+              "name": "Electron"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "ll-sim",
+              "name": "SimulationEngine"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "ll-mqtt",
+              "name": "MQTTService"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "ll-influx",
+              "name": "InfluxDBService"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "UMLModel",
+      "_id": "model-component",
+      "name": "Modele de Composants",
+      "ownedElements": [
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-components",
+          "name": "Composants Systeme",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-electron",
+              "name": "Electron Main Process"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-frontend",
+              "name": "Frontend Web (9 pages)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-simulation",
+              "name": "Simulation Engine"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-influx",
+              "name": "InfluxDB Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-mqtt",
+              "name": "MQTT Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-opcua",
+              "name": "OPC-UA Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-modbus",
+              "name": "Modbus TCP Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-matlab",
+              "name": "MATLAB Backend"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-influxdb",
+              "name": "InfluxDB (external)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "comp-mosquitto",
+              "name": "Mosquitto Broker (external)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "UMLModel",
+      "_id": "model-usecase",
+      "name": "Modele de Cas d'Utilisation",
+      "ownedElements": [
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-usecases",
+          "name": "Cas d'Utilisation",
+          "ownedElements": [
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-dashboard",
+              "name": "Visualiser Dashboard OEE"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-control",
+              "name": "Controler Machines"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-anomaly",
+              "name": "Injecter Anomalie"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-predictions",
+              "name": "Visualiser Predictions"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-rul",
+              "name": "Calculer RUL"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-fft",
+              "name": "Analyser FFT"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-gmao",
+              "name": "Gerer GMAO"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-mes",
+              "name": "Suivre Production MES"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-twin",
+              "name": "Visualiser Digital Twin"
+            },
+            {
+              "_type": "UMLUseCase",
+              "_id": "uc-mqtt",
+              "name": "Connecter MQTT"
+            },
+            {
+              "_type": "UMLActor",
+              "_id": "actor-operateur",
+              "name": "Operateur Industriel"
+            },
+            {
+              "_type": "UMLActor",
+              "_id": "actor-maintenance",
+              "name": "Maintenance Technician"
+            },
+            {
+              "_type": "UMLActor",
+              "_id": "actor-ingenieur",
+              "name": "Ingenieur Process"
+            },
+            {
+              "_type": "UMLActor",
+              "_id": "actor-admin",
+              "name": "Administrateur Systeme"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "_type": "UMLModel",
+      "_id": "model-state",
+      "name": "Modele d'Etats",
+      "ownedElements": [
+        {
+          "_type": "UMLStateMachine",
+          "_id": "sm-machine",
+          "name": "Cycle de Vie Machine",
+          "ownedElements": [
+            {
+              "_type": "UMLRegion",
+              "_id": "region-main",
+              "name": "Region Principale",
+              "ownedElements": [
+                {
+                  "_type": "UMLState",
+                  "_id": "state-idle",
+                  "name": "Idle"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "state-running",
+                  "name": "Running"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "state-watch",
+                  "name": "Surveillance"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "state-anomaly",
+                  "name": "Anomalie Detectee"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "state-stopped",
+                  "name": "Arret"
+                },
+                {
+                  "_type": "UMLState",
+                  "_id": "state-maintenance",
+                  "name": "Maintenance"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

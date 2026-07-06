@@ -1,0 +1,96 @@
+@startuml sequence-diagram
+title Diagramme de Sequence - Flux Principal INDUS
+skinparam sequenceArrowThickness 2
+skinparam maxMessageSize 200
+skinparam sequenceParticipantPadding 20
+
+actor Utilisateur as User
+participant "Electron\n(Main Process)" as Electron
+participant "Vite Dev\nServer" as Vite
+participant "Frontend\n(Renderer)" as Frontend
+participant "Simulation\nEngine" as Sim
+participant "InfluxDB\nService" as Influx
+participant "MQTT\nService" as MQTT
+participant "OPC-UA\nService" as OPCUA
+participant "Modbus\nService" as Modbus
+participant "MATLAB\nBackend" as MATLAB
+database "InfluxDB" as InfluxDB
+queue "Mosquitto\nBroker" as Mosquitto
+
+== Demarrage ==
+User -> Electron : Lance l'application
+activate Electron
+Electron -> Vite : Demarre (port 5173)
+activate Vite
+Electron -> Frontend : Charge l'UI
+activate Frontend
+Electron -> Sim : Demarre simulation
+activate Sim
+Electron -> Influx : Connecte InfluxDB
+activate Influx
+Influx -> InfluxDB : Health check
+Electron -> MQTT : Connecte Mosquitto
+activate MQTT
+MQTT -> Mosquitto : Connexion TCP 1883
+Electron -> OPCUA : Demarre serveur
+activate OPCUA
+Electron -> Modbus : Demarre serveur
+activate Modbus
+
+== Boucle de Simulation (toutes les 1s) ==
+loop Toutes les 1 secondes
+    Sim -> Sim : tick() - Met a jour etats
+    Sim -> Influx : writePoint('machines', data)
+    Influx -> InfluxDB : POST /write
+    Sim -> OPCUA : updateNodes(values)
+    Sim -> Modbus : updateRegisters(values)
+    Sim -> Frontend : WebSocket update
+    Frontend -> Frontend : refreshUI()
+end
+
+== Publication MQTT ==
+loop Toutes les 3 secondes
+    Sim -> MQTT : publish('factory/machines', data)
+    MQTT -> Mosquitto : MQTT Publish
+    Mosquitto -> Frontend : MQTT Subscribe (si connecte)
+end
+
+== Utilisateur interagit ==
+User -> Frontend : Clique sur Machine M2
+Frontend -> Frontend : selectMachine(2)
+Frontend -> Frontend : Affiche details M2
+
+User -> Frontend : Injecte anomalie
+Frontend -> Sim : injectAnomaly(machineId)
+Sim -> Sim : Modifie simData
+Sim -> Frontend : Mise a jour UI
+
+User -> Frontend : Connecte MQTT
+Frontend -> MQTT : connectMQTT()
+MQTT -> Mosquitto : Test connexion
+MQTT -> Frontend : MQTT connecte
+
+== Predictions MATLAB ==
+User -> MATLAB : Lance predictive_model
+activate MATLAB
+MATLAB -> MQTT : publish('factory/predictions/maintenance/M1', data)
+MQTT -> Mosquitto : Publish predictions
+MQTT -> Frontend : Recoit predictions
+Frontend -> Frontend : Affiche RUL, P(fail)
+
+MATLAB -> MQTT : publish('factory/predictions/oee', data)
+MQTT -> Mosquitto : Publish OEE
+MATLAB -> MATLAB : Attend 3s
+
+deactivate MATLAB
+
+== Arret ==
+User -> Electron : Ferme la fenetre
+Electron -> Sim : stop()
+Electron -> MQTT : disconnect()
+Electron -> OPCUA : stop()
+Electron -> Modbus : stop()
+Electron -> Influx : close()
+Electron -> Frontend : Ferme
+deactivate Electron
+@enduml

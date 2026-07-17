@@ -1,1 +1,0 @@
-PR #6 - Contribution for Pull Request Sharpshooter achievement
